@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antonio's Intelligence (AI) & Label Hub</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #e0f2fe;
+            --background-color: #f3f4f6;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .video-container {
+            position: relative;
+            background-color: #111827;
+            border: 2px solid var(--primary-color); 
+            border-radius: 0.75rem; 
+            overflow: hidden;
+            aspect-ratio: 4/3; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
+            margin-bottom: 1rem; 
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        #localVideo, #remoteVideo {
+            transform: none; 
+            object-fit: contain; 
+        }
+
+        .video-label {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0.5rem;
+            text-white; 
+            font-medium;
+            bg-black bg-opacity-70; 
+            px-2; 
+            py-1; 
+            rounded-lg; 
+            font-size: 0.75rem; 
+        }
+
+        .btn {
+            @apply px-4 py-2 font-semibold rounded-xl transition duration-200 ease-in-out shadow-lg text-sm;
+        }
+        .btn-primary {
+            @apply btn bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300;
+        }
+        .btn-success {
+            @apply btn bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300;
+        }
+        .avatar-img-text {
+             @apply flex-shrink-0 w-10 h-10 rounded-full object-cover border-2 border-indigo-400 shadow-md mr-3 flex items-center justify-center text-white text-lg font-bold bg-indigo-500;
+        }
+        .file-input-style {
+            @apply w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold;
+        }
+
+        /* TIP ANIMATION STYLES */
+        #tip-animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through */
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(0, -20px) scale(1);
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--x-end), var(--y-end)) scale(0.2);
+            }
+        }
+
+        .tip-particle {
+            position: absolute;
+            font-size: 1.5rem;
+            color: gold;
+            text-shadow: 0 0 5px rgba(255, 255, 0, 0.7);
+            animation: float-up 2.5s ease-out forwards;
+        }
+
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Antonio's Intelligence (AI) & Label Hub</h1>
+        <p class="text-lg font-medium text-gray-700 mb-6">
+            <strong class="text-red-600">LABEL OWNER (Antonio Roschelle Yarbough SR TTEE - Pisces):</strong> The Hub focuses on **Client Progression, Budget Management, and AI-Driven Mentorship**.
+        </p>
+
+        <!-- MAIN GRID: Controls (2/3) and Video (1/3) on large screens -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- 1. RIGHT COLUMN (Now first in source for mobile top placement): VIDEO FEEDS & STATUS (Takes 1/3 width on desktop) -->
+            <div class="space-y-6">
+
+                <!-- Status and Call Actions -->
+                <div id="status-box" class="bg-indigo-100 p-3 rounded-xl shadow-inner flex flex-col items-center">
+                    <span class="font-bold text-indigo-800 mb-2" id="callStatus">Awaiting Media...</span>
+                    <div id="call-actions" class="flex space-x-2 w-full justify-center">
+                        <button id="answerCallBtn" class="btn-primary hidden w-1/2">
+                            Answer Call
+                        </button>
+                        <button id="hangupBtn" class="btn-primary hidden w-1/2">
+                            Hang Up
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Video Feeds (De-emphasized) -->
+                <div class="p-3 bg-white rounded-xl shadow-md border border-gray-200">
+                    <h3 class="font-bold text-gray-700 text-lg mb-2">Live Feeds</h3>
+                    
+                    <!-- Local Video (Producer/Host Feed) -->
+                    <div class="video-container">
+                        <video id="localVideo" autoplay playsinline muted class="w-full h-full" poster="https://placehold.co/600x450/1f2937/ffffff?text=PRODUCER+FEED"></video>
+                        <span class="video-label absolute bottom-2 left-2 text-white bg-black bg-opacity-70 px-1 rounded">LABEL OWNER (You)</span>
+                    </div>
+                    
+                    <!-- Remote Video (Caller/Client Feed) -->
+                    <div class="video-container">
+                        <video id="remoteVideo" autoplay playsinline class="w-full h-full" poster="https://placehold.co/600x450/374151/ffffff?text=PERFORMER+FEED"></video>
+                        <span class="video-label absolute bottom-2 left-2 text-white bg-black bg-opacity-50 px-1 rounded">Client/Caller</span>
+                    </div>
+                </div>
+
+            </div> <!-- End of RIGHT COLUMN (Now first) -->
+
+            <!-- 2. LEFT COLUMN (Now second in source): CONTROLS & INFO (Takes 2/3 width on desktop) -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- App Info section is where the App ID, User ID, and BALANCE are displayed -->
+                <div id="app-info" class="text-sm text-gray-500">
+                     <div class="p-3 bg-gray-100 rounded-xl shadow-inner text-gray-600 font-medium">Loading User Identity and Budget...</div>
+                </div>
+                
+                <!-- Call & Gifting Section (HIGH PRIORITY ACTION) -->
+                <div class="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
+                    <h2 class="text-xl font-bold mb-3 text-gray-800">1. Label Actions & Client Tipping (Goal Progression)</h2>
+                    <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3 items-end">
+                        <div class="flex-grow w-full">
+                            <label for="remoteUserIdInput" class="block text-sm font-medium text-gray-700">Target User ID (To call, reward, or view progression)</label>
+                            <div class="flex items-center mt-1">
+                                <!-- Simple avatar placeholder for remote user -->
+                                <div id="remoteAvatarDisplay" class="avatar-img-text text-lg">?</div>
+                                <input type="text" id="remoteUserIdInput" placeholder="Paste Target User ID here" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <!-- NEW: Presence Indicator -->
+                                <div id="remotePresenceIndicator" class="ml-2 w-3 h-3 rounded-full bg-gray-400 transition-colors duration-300 flex-shrink-0" title="Offline / Checking..."></div>
+                            </div>
+                        </div>
+                        
+                        <button id="startCallBtn" class="btn-success w-full md:w-auto" disabled>
+                            Start Call
+                        </button>
+                        
+                        <!-- HOST ACTION: Distribute Rewards -->
+                        <button id="sendRewardBtn" class="btn bg-indigo-500 text-white hover:bg-indigo-600 w-full md:w-auto" disabled>
+                            Send $5 Reward
+                        </button>
+                        
+                        <!-- CLIENT ACTION: Send Gift/Tip -->
+                        <button id="sendGiftBtn" class="btn bg-yellow-500 text-white hover:bg-yellow-600 w-full md:w-auto" disabled>
+                            Send $5 Tip
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI TUTORING & ZODIAC SECTION (HIGH PRIORITY FEATURE) -->
+                <div class="bg-indigo-50 p-6 rounded-xl shadow-lg border border-indigo-300">
+                    <h2 class="text-xl font-bold text-indigo-800 mb-4">2. Antonio's Intelligence (AI) - Zodiac Teacher System</h2>
+                    <p class="text-sm text-indigo-700 mb-4">Leverage the AI Teacher system to provide positive, compatible feedback based on astrological sign compatibility. Use this to guide your rewards.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        
+                        <!-- 1. Label Owner Sign (Fixed to Pisces) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Your Sign (Producer/Label Owner)</label>
+                            <div id="userZodiacDisplay" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-200 text-gray-700 font-bold">
+                                Pisces Poet & Big Fish (Fish)
+                            </div>
+                            <!-- Hidden input to hold the value for the JS logic -->
+                            <input type="hidden" id="userZodiac" value="Pisces">
+                        </div>
+                        
+                        <!-- 2. Target Performer Birthday Input -->
+                        <div>
+                            <label for="targetBirthdayInput" class="block text-sm font-medium text-gray-700"><span id="birthdayLabel">Target Performer's Birthday</span></label>
+                            <input type="date" id="targetBirthdayInput" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+
+                        <!-- 3. Target Performer Sign (Auto-calculated/Readonly) -->
+                        <div>
+                            <label for="targetZodiacDisplay" class="block text-sm font-medium text-gray-700">Target Performer Sign</label>
+                            <div id="targetZodiacDisplay" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-200 text-gray-700 font-bold">
+                                N/A
+                            </div>
+                            <!-- Hidden input to hold the actual value for AI logic -->
+                            <input type="hidden" id="targetZodiac" value="">
+                        </div>
+                    </div>
+                    
+                    <!-- Performer Save Button (Only visible for Clients) -->
+                    <button id="saveBirthdayBtn" class="btn bg-blue-600 text-white hover:bg-blue-700 w-full mt-4 hidden">
+                        Save My Birthday for AI System
+                    </button>
+                    
+                    <!-- The Button (Full width below the 3 inputs) -->
+                    <button id="getAIFeedbackBtn" class="btn bg-purple-600 text-white hover:bg-purple-700 w-full mt-4" disabled>
+                        Get AI Feedback (Zodiac Teacher)
+                    </button>
+
+                    <div id="ai-response-box" class="mt-4 p-4 border border-indigo-300 rounded-lg bg-white shadow-inner">
+                        <p id="ai-response-text" class="text-gray-600 italic">Welcome! The AI Teacher system will become ready when the performer's sign is available.</p>
+                    </div>
+                </div>
+
+                <!-- LOCAL FILE UPLOADER SECTION (Asset Management) -->
+                <div class="bg-gray-100 p-4 rounded-xl shadow-md border border-gray-300">
+                    <h2 class="text-xl font-bold text-gray-800 mb-3">3. Local Asset Uploader (Producer & First Lady)</h2>
+                    <p class="text-sm text-gray-600 mb-4">Upload a local image for visual reference during this session only. Not saved to the database.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Producer Upload -->
+                        <div class="bg-white p-4 rounded-lg shadow border border-indigo-500/30">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Producer/Label Owner Image</label>
+                            <input type="file" id="producerFileInput" class="file-input-style file:bg-indigo-500/10 file:text-indigo-600 hover:file:bg-indigo-500/20" accept="image/*" onchange="handleFileUpload('producer')">
+                            <img id="producerImagePreview" class="mt-3 max-h-32 w-auto rounded-md object-contain mx-auto preview-hidden" alt="Producer Preview">
+                        </div>
+
+                        <!-- First Lady Upload -->
+                        <div class="bg-white p-4 rounded-lg shadow border border-pink-500/30">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">First Lady Image</label>
+                            <input type="file" id="firstLadyFileInput" class="file-input-style file:bg-pink-500/10 file:text-pink-600 hover:file:bg-pink-500/20" accept="image/*" onchange="handleFileUpload('firstLady')">
+                            <img id="firstLadyImagePreview" class="mt-3 max-h-32 w-auto rounded-md object-contain mx-auto preview-hidden" alt="First Lady Preview">
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End of LEFT COLUMN (Now second) -->
+
+        </div>
+    </div>
+
+    <!-- Tipping Animation Container -->
+    <div id="tip-animation-container"></div>
+
+    <!-- Firebase SDK Imports (No changes needed here, logic is sound) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, deleteDoc, updateDoc, getDoc, runTransaction, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GLOBAL SETUP & FIREBASE INITIALIZATION ---
+
+        setLogLevel('Debug');
+
+        // Firestore paths and config are automatically provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth, userId = null;
+        
+        let pc = null;
+        let localStream = null;
+        let remoteStream = null;
+        let userBalance = 0; 
+        let isLabelOwner = false; 
+        let currentTargetZodiac = ''; 
+        let currentUserAvatarUrl = '?'; 
+
+        // DOM Elements
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const statusEl = document.getElementById('callStatus');
+        const appInfoEl = document.getElementById('app-info');
+        const startCallBtn = document.getElementById('startCallBtn');
+        const sendGiftBtn = document.getElementById('sendGiftBtn'); 
+        const sendRewardBtn = document.getElementById('sendRewardBtn'); 
+        const remoteUserIdInput = document.getElementById('remoteUserIdInput');
+        const answerCallBtn = document.getElementById('answerCallBtn');
+        const hangupBtn = document.getElementById('hangupBtn');
+        const getAIFeedbackBtn = document.getElementById('getAIFeedbackBtn');
+        const tipAnimationContainer = document.getElementById('tip-animation-container');
+        
+        // Zodiac/Profile DOM references
+        const userZodiacInput = document.getElementById('userZodiac');
+        const targetBirthdayInput = document.getElementById('targetBirthdayInput');
+        const targetZodiacDisplay = document.getElementById('targetZodiacDisplay');
+        const targetZodiacHidden = document.getElementById('targetZodiac');
+        const birthdayLabel = document.getElementById('birthdayLabel');
+        const saveBirthdayBtn = document.getElementById('saveBirthdayBtn');
+        const remoteAvatarDisplay = document.getElementById('remoteAvatarDisplay'); 
+        const remotePresenceIndicator = document.getElementById('remotePresenceIndicator'); // NEW PRESENCE INDICATOR
+        
+        const aiResponseText = document.getElementById('ai-response-box').querySelector('p');
+
+        // Firestore Paths & Constants
+        const CALLS_COLLECTION = `/artifacts/${appId}/public/data/webrtc_calls/`;
+        const BALANCE_COLLECTION = 'balance_data';
+        const BALANCE_DOC_ID = 'ledger'; 
+        const PRODUCER_ID_DOC_PATH = `/artifacts/${appId}/public/data/label_config/owner`;
+        const PERFORMER_PROFILE_COLLECTION = `/artifacts/${appId}/public/data/performer_profiles/`;
+        const TRANSACTION_LOG_COLLECTION = `/artifacts/${appId}/public/data/transactions`;
+        const PRESENCE_COLLECTION = `/artifacts/${appId}/public/data/user_presence/`; // NEW PRESENCE COLLECTION
+        
+        const INITIAL_LABEL_BUDGET = 100000;
+        const CLIENT_STARTING_BALANCE = 0; 
+
+        let incomingCallDocRef = null; 
+        let outgoingCallDocRef = null; 
+        let unsubscribeRemotePresence = null; // NEW
+
+        const configuration = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+            ],
+        };
+
+        // --- TIP ANIMATION IMPLEMENTATION ---
+
+        function animateTip(targetElement) {
+            const rect = targetElement.getBoundingClientRect();
+            const startX = rect.left + rect.width / 2;
+            const startY = rect.top + rect.height / 2;
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('tip-particle');
+                particle.textContent = '$'; 
+                
+                // Random position and animation variables
+                const angle = Math.random() * 2 * Math.PI; 
+                const distance = Math.random() * 150 + 50; 
+                
+                const xEnd = Math.cos(angle) * distance;
+                const yEnd = Math.sin(angle) * distance - 200; // Force upward bias
+
+                particle.style.left = `${startX}px`;
+                particle.style.top = `${startY}px`;
+                particle.style.setProperty('--x-end', `${xEnd}px`);
+                particle.style.setProperty('--y-end', `${yEnd}px`);
+                particle.style.animationDelay = `${Math.random() * 0.5}s`;
+                particle.style.animationDuration = `${2.0 + Math.random() * 1.0}s`;
+
+                tipAnimationContainer.appendChild(particle);
+
+                // Clean up the element after animation
+                setTimeout(() => {
+                    particle.remove();
+                }, 4000); 
+            }
+        }
+
+
+        // --- UTILITY FUNCTIONS ---
+
+        function logStatus(message, colorClass = 'bg-indigo-100', buttonShow = null) {
+            statusEl.textContent = message;
+            const statusBox = document.getElementById('status-box');
+            statusBox.className = `bg-indigo-100 p-3 rounded-xl shadow-inner flex flex-col items-center`; 
+            statusBox.classList.add(colorClass);
+
+            answerCallBtn.classList.add('hidden');
+            hangupBtn.classList.add('hidden');
+
+            if (buttonShow === 'answer') {
+                answerCallBtn.classList.remove('hidden');
+            } else if (buttonShow === 'hangup') {
+                hangupBtn.classList.remove('hidden');
+            }
+        }
+        
+        function getCandidatesPath(callDocRef, type) {
+            return collection(callDocRef, `${type}Candidates`);
+        }
+        
+        /**
+         * Calculates Zodiac sign from a YYYY-MM-DD date string.
+         * FIXED: The logic was completely rewritten to correctly handle boundaries.
+         */
+        function calculateZodiac(dateString) {
+            if (!dateString) return null;
+            const parts = dateString.split('-');
+            if (parts.length !== 3) return null;
+
+            const month = parseInt(parts[1], 10);
+            const day = parseInt(parts[2], 10);
+            
+            // Basic validation
+            if (isNaN(month) || isNaN(day) || month < 1 || month > 12 || day < 1 || day > 31) {
+                return 'N/A (Invalid Date)';
+            }
+
+            // Fixed Zodiac boundary checks
+            if ((month === 1 && day <= 19) || (month === 12 && day >= 22)) return 'Capricorn';
+            if (month === 1 && day >= 20 || month === 2 && day <= 18) return 'Aquarius';
+            if (month === 2 && day >= 19 || month === 3 && day <= 20) return 'Pisces';
+            if (month === 3 && day >= 21 || month === 4 && day <= 19) return 'Aries';
+            if (month === 4 && day >= 20 || month === 5 && day <= 20) return 'Taurus';
+            if (month === 5 && day >= 21 || month === 6 && day <= 20) return 'Gemini';
+            if (month === 6 && day >= 21 || month === 7 && day <= 22) return 'Cancer';
+            if (month === 7 && day >= 23 || month === 8 && day <= 22) return 'Leo';
+            if (month === 8 && day >= 23 || month === 9 && day <= 22) return 'Virgo';
+            if (month === 9 && day >= 23 || month === 10 && day <= 22) return 'Libra';
+            if (month === 10 && day >= 23 || month === 11 && day <= 21) return 'Scorpio';
+            if (month === 11 && day >= 22 || month === 12 && day <= 21) return 'Sagittarius';
+
+            return 'N/A (Invalid Date)';
+        }
+
+        function getZodiacDisplay(sign) {
+             const names = {
+                Aries: "Aries (Ram)", Taurus: "Taurus (Bull)", Gemini: "Gemini (Twins)", Cancer: "Cancer (Crab)",
+                Leo: "Leo (Lion)", Virgo: "Virgo (Maiden)", Libra: "Libra (Scales)", Scorpio: "Scorpio (Scorpion)",
+                Sagittarius: "Sagittarius (Archer)", Capricorn: "Capricorn (Goat)", Aquarius: "Aquarius (Water Bearer)",
+                Pisces: "Pisces Poet & Big Fish (Fish)"
+            };
+            return names[sign] || sign;
+        }
+        
+        /**
+         * Renders the local user's info display with the current avatar.
+         * Avatar display is now a simple text placeholder.
+         */
+        function renderLocalUserInfo() {
+             appInfoEl.innerHTML = `
+                <div class="flex items-center p-3 bg-white rounded-xl shadow-md border border-red-400">
+                    <div class="avatar-img-text">${currentUserAvatarUrl}</div>
+                    <div class="flex flex-col md:flex-row md:items-center md:space-x-6 space-y-1 md:space-y-0 w-full justify-between">
+                        <div class="flex items-center text-sm">
+                            <strong class="text-gray-700">Your User ID:</strong>
+                            <span id="userIdDisplay" class="font-mono ${isLabelOwner ? 'text-red-600' : 'text-indigo-700'} font-semibold ml-2 break-all">${userId}</span>
+                        </div>
+                        <div class="flex items-center justify-end">
+                            <strong class="text-gray-700 text-xl">${isLabelOwner ? 'LABEL BUDGET:' : 'CLIENT BALANCE/RANK:'}</strong>
+                            <span id="userBalanceDisplay" class="font-mono text-green-600 font-extrabold text-2xl ml-2">$${userBalance.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+
+        /**
+         * Finds a compatible AI Zodiac teacher based on the user's element.
+         */
+        function getCompatibleTeacherSign(userSign) {
+            const elements = {
+                Aries: 'Fire', Leo: 'Fire', Sagittarius: 'Fire',
+                Taurus: 'Earth', Virgo: 'Earth', Capricorn: 'Earth',
+                Gemini: 'Air', Libra: 'Air', Aquarius: 'Air',
+                Cancer: 'Water', Scorpio: 'Water', Pisces: 'Water',
+            };
+
+            const compatibilityMatrix = {
+                Fire: ['Leo', 'Sagittarius', 'Aries'],
+                Earth: ['Virgo', 'Capricorn', 'Taurus'],
+                Air: ['Libra', 'Aquarius', 'Gemini'],
+                Water: ['Scorpio', 'Pisces', 'Cancer'],
+            };
+
+            const userElement = elements[userSign];
+            const compatibleSigns = compatibilityMatrix[userElement] || ['Gemini', 'Libra', 'Aquarius']; // Default to Air if unknown
+            
+            return compatibleSigns[Math.floor(Math.random() * compatibleSigns.length)];
+        }
+
+        // --- NEW PRESENCE SYSTEM ---
+        
+        /**
+         * Sets or updates the current user's online status publicly.
+         */
+        async function setOnlineStatus(isOnline) {
+            if (!userId || !db) return;
+            const presenceRef = doc(db, PRESENCE_COLLECTION, userId);
+            try {
+                if (isOnline) {
+                    await setDoc(presenceRef, { 
+                        userId: userId,
+                        isOnline: true, 
+                        lastSeen: new Date().toISOString()
+                    });
+                } else {
+                    // When going offline, set isOnline to false
+                    await updateDoc(presenceRef, { 
+                        isOnline: false, 
+                        lastSeen: new Date().toISOString()
+                    });
+                }
+            } catch(e) {
+                console.error("Failed to set online status:", e);
+            }
+        }
+        
+        // Attempt to set status to offline when the tab is closed/unloaded
+        window.addEventListener('beforeunload', () => {
+             if (db && userId) {
+                 const presenceRef = doc(db, PRESENCE_COLLECTION, userId);
+                 // Note: This is a best-effort, non-guaranteed update in the single-file context.
+                 updateDoc(presenceRef, { isOnline: false, lastSeen: new Date().toISOString() }).catch(e => console.error("Unload status update failed:", e));
+             }
+        });
+
+        /**
+         * Listens to the online status of the remote user and updates the indicator dot.
+         */
+        function listenForRemotePresence(remoteId) {
+            if (unsubscribeRemotePresence) {
+                unsubscribeRemotePresence();
+            }
+
+            // Reset indicator
+            remotePresenceIndicator.classList.remove('bg-green-500', 'bg-red-500');
+            remotePresenceIndicator.classList.add('bg-gray-400');
+            remotePresenceIndicator.title = 'Checking...';
+
+            if (!remoteId) return;
+
+            const presenceRef = doc(db, PRESENCE_COLLECTION, remoteId);
+            
+            unsubscribeRemotePresence = onSnapshot(presenceRef, (docSnapshot) => {
+                const data = docSnapshot.data();
+                const isOnline = data?.isOnline === true;
+                
+                if (isOnline) {
+                    remotePresenceIndicator.classList.remove('bg-gray-400', 'bg-red-500');
+                    remotePresenceIndicator.classList.add('bg-green-500');
+                    remotePresenceIndicator.title = 'Online (Active)';
+                } else if (docSnapshot.exists()) {
+                    remotePresenceIndicator.classList.remove('bg-gray-400', 'bg-green-500');
+                    remotePresenceIndicator.classList.add('bg-red-500');
+                    remotePresenceIndicator.title = `Offline (Last seen: ${new Date(data.lastSeen).toLocaleTimeString()})`;
+                } else {
+                    // Document doesn't exist yet, likely never signed in
+                    remotePresenceIndicator.classList.remove('bg-gray-400', 'bg-green-500');
+                    remotePresenceIndicator.classList.add('bg-red-500');
+                    remotePresenceIndicator.title = 'User Profile Not Found / Offline';
+                }
+            }, (error) => {
+                console.error("Error listening to remote presence:", error);
+                remotePresenceIndicator.classList.remove('bg-gray-400', 'bg-green-500');
+                remotePresenceIndicator.classList.add('bg-red-500');
+                remotePresenceIndicator.title = 'Error checking status';
+            });
+        }
+
+
+        // --- FIRESTORE PROFILE HANDLERS (Simplified for no avatar storage) ---
+        
+        /**
+         * Listens for the birthday data of a given performer ID (used by Label Owner for remote, and Client for local).
+         */
+        let unsubscribePerformerProfile = null;
+        function listenForPerformerProfile(performerId, isLocalUser = false) {
+            if (unsubscribePerformerProfile) {
+                unsubscribePerformerProfile();
+            }
+            
+            // If checking for a remote user
+            if (!isLocalUser) {
+                targetBirthdayInput.value = '';
+                targetZodiacDisplay.textContent = 'N/A';
+                targetZodiacHidden.value = ''; 
+                currentTargetZodiac = ''; 
+                getAIFeedbackBtn.disabled = true;
+                remoteAvatarDisplay.textContent = '?'; // Reset remote avatar placeholder
+            }
+
+            if (!performerId) return;
+
+            const profileRef = doc(db, PERFORMER_PROFILE_COLLECTION, performerId);
+            
+            unsubscribePerformerProfile = onSnapshot(profileRef, (docSnapshot) => {
+                const data = docSnapshot.data();
+                const birthday = data?.birthday || '';
+                
+                if (isLocalUser) {
+                    // Update local user's data and UI
+                    currentUserAvatarUrl = (data?.zodiac || '?').substring(0, 1);
+                    renderLocalUserInfo(); // Re-render to show new avatar placeholder
+                    
+                    if (birthday) {
+                         targetBirthdayInput.value = birthday;
+                    }
+                } else {
+                    // Update remote user's data and UI
+                    const remoteZodiac = data?.zodiac || '?';
+                    remoteAvatarDisplay.textContent = remoteZodiac.substring(0, 1);
+                    targetBirthdayInput.value = birthday; // Update the UI input
+                }
+
+                const newZodiac = calculateZodiac(birthday);
+                
+                if (isLocalUser) {
+                     userZodiacInput.value = newZodiac; // Update hidden input for local user
+                } else {
+                    currentTargetZodiac = newZodiac;
+                    targetZodiacHidden.value = newZodiac; 
+                    targetZodiacDisplay.textContent = newZodiac ? getZodiacDisplay(newZodiac) : 'N/A';
+
+                    if (newZodiac && newZodiac !== 'N/A (Invalid Date)') {
+                        getAIFeedbackBtn.disabled = false;
+                        aiResponseText.innerHTML = `<p class="text-gray-600 italic">Target Performer's sign set to <span class="font-bold text-indigo-700">${getZodiacDisplay(newZodiac)}</span>. Click 'Get AI Feedback' to generate a report.</p>`;
+                    } else {
+                        getAIFeedbackBtn.disabled = true;
+                        aiResponseText.innerHTML = `<p class="text-red-600 italic">Waiting for Performer (${performerId}) to set their birthday...</p>`;
+                    }
+                }
+            }, (error) => {
+                console.error("Error listening to performer profile:", error);
+            });
+        }
+        
+        /**
+         * Saves the current user's birthday to their public profile (used by Client).
+         */
+        async function saveMyBirthday() {
+            const birthday = targetBirthdayInput.value;
+            const zodiac = calculateZodiac(birthday);
+            
+            if (!birthday || zodiac === 'N/A (Invalid Date)') {
+                aiResponseText.innerHTML = `<p class="text-red-600 italic">Please enter a valid birthday first.</p>`;
+                return;
+            }
+            
+            saveBirthdayBtn.disabled = true;
+            saveBirthdayBtn.textContent = 'Saving...';
+
+            const profileRef = doc(db, PERFORMER_PROFILE_COLLECTION, userId);
+            try {
+                // Only save birthday and zodiac, no avatar URL
+                await setDoc(profileRef, { birthday: birthday, zodiac: zodiac });
+                aiResponseText.innerHTML = `<p class="text-green-600 italic">Birthday saved! Your sign is set to <span class="font-bold">${getZodiacDisplay(zodiac)}</span>.</p>`;
+            } catch (error) {
+                console.error("Error saving birthday:", error);
+                aiResponseText.innerHTML = `<p class="text-red-600 italic">Error saving birthday. See console.</p>`;
+            } finally {
+                saveBirthdayBtn.disabled = false;
+                saveBirthdayBtn.textContent = 'Save My Birthday for AI System';
+            }
+        }
+        
+        // --- AI (ANTONIO'S INTELLIGENCE) GENERATION ---
+        
+        async function callGeminiAI() {
+            getAIFeedbackBtn.disabled = true;
+            aiResponseText.innerHTML = `<p class="text-indigo-600 font-semibold">🌌 Contacting Antonio's Intelligence... Generating compatible feedback from the stars...</p>`;
+            
+            const userSign = userZodiacInput.value;
+            const targetSign = targetZodiacHidden.value; 
+            
+            if (!targetSign || targetSign === 'N/A (Invalid Date)') {
+                 aiResponseText.innerHTML = `<p class="text-red-600 font-semibold">Cannot generate feedback: Target Performer's sign is missing or invalid.</p>`;
+                 getAIFeedbackBtn.disabled = false;
+                 return;
+            }
+            
+            const teacherSign = getCompatibleTeacherSign(userSign);
+
+            const teacherPersona = {
+                Aries: "A highly energetic, direct, and motivating Aries tutor. Focus on boldness and initiative.",
+                Taurus: "A calm, patient, and grounded Taurus tutor. Focus on quality, consistency, and artistic texture.",
+                Gemini: "A witty, articulate, and adaptable Gemini tutor. Focus on versatility and lyrical flow/communication.",
+                Cancer: "A deeply emotional, nurturing, and sensitive Cancer tutor. Focus on core feeling and authenticity.",
+                Leo: "A dramatic, confident, and encouraging Leo tutor. Focus on stage presence and powerful delivery.",
+                Virgo: "A detail-oriented, pragmatic, and helpful Virgo tutor. Focus on precision, technique, and structure.",
+                Libra: "A balanced, aesthetic, and diplomatic Libra tutor. Focus on harmony, composition, and fairness.",
+                Scorpio: "An intense, perceptive, and transformative Scorpio tutor. Focus on depth, intensity, and meaning.",
+                Sagittarius: "A philosophical, optimistic, and expansive Sagittarius tutor. Focus on vision, message, and exploration.",
+                Capricorn: "A disciplined, professional, and strategic Capricorn tutor. Focus on career, work ethic, and structure.",
+                Aquarius: "An unconventional, innovative, and objective Aquarius tutor. Focus on originality and future trends.",
+                Pisces: "A compassionate, intuitive, and imaginative Pisces tutor. Focus on artistry, atmosphere, and feeling.",
+            };
+            
+            const systemPrompt = `Act as Antonio's Intelligence (AI), a specialized mentor in music and performance. Your persona is a respected, encouraging, and highly compatible ${teacherSign} tutor. ${teacherPersona[teacherSign]}
+            
+            Your absolute priority is to provide constructive feedback that strictly adheres to the Label Owner's rules: 
+            1. The content **must be respectful**. 
+            2. The content **must not contain any criminal or harmful lyrics/messages**. 
+            3. The feedback must be tailored for a performer (Rapper, Singer, or Dancer, acknowledging Hip-Hop/R&B connection) whose sign is ${targetSign}. 
+            4. Keep the response to a single, encouraging paragraph and sign off as 'AI ${teacherSign} Teacher'.`;
+
+            const userQuery = `I am the Label Owner (sign: ${userSign}) who watches the performer (sign: ${targetSign}) create content on the live video stream. The performer is trying to earn tips. They are performing as a rapper, singer, or dancer to beats I am creating on my Akai MPK249 MIDI controller. I need feedback on the performer's potential.`;
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            try {
+                // Implementing exponential backoff with retries for API call
+                const maxRetries = 3;
+                let attempt = 0;
+                let response;
+
+                while (attempt < maxRetries) {
+                    try {
+                        response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: userQuery }] }],
+                                systemInstruction: { parts: [{ text: systemPrompt }] },
+                            })
+                        });
+
+                        if (response.ok) {
+                            break; // Success! Exit the loop.
+                        } else if (response.status === 429 || response.status >= 500) {
+                            // Too Many Requests or Server Error, retry
+                            attempt++;
+                            if (attempt < maxRetries) {
+                                const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+                                await new Promise(resolve => setTimeout(resolve, delay));
+                            } else {
+                                throw new Error(`API call failed after ${maxRetries} attempts: ${response.statusText}`);
+                            }
+                        } else {
+                            // Non-retriable error (e.g., 400 Bad Request)
+                            throw new Error(`API call failed: ${response.statusText}`);
+                        }
+                    } catch (error) {
+                        if (attempt < maxRetries) {
+                            attempt++;
+                            const delay = Math.pow(2, attempt) * 1000;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                        } else {
+                            throw error;
+                        }
+                    }
+                }
+                
+                if (!response || !response.ok) {
+                    throw new Error("Failed to get a successful response from the API after retries.");
+                }
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "AI response failed to generate content.";
+
+                aiResponseText.innerHTML = `
+                    <p class="font-bold text-lg text-purple-700 mb-2">Feedback from AI ${teacherSign} Teacher:</p>
+                    <p class="text-gray-800">${text}</p>
+                `;
+
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                aiResponseText.innerHTML = `<p class="text-red-600 font-semibold">Error contacting AI: ${error.message}. Please check console for details.</p>`;
+            } finally {
+                getAIFeedbackBtn.disabled = false;
+            }
+        }
+
+        // --- BALANCE & TRANSACTION SYSTEM (Modified to include animation) ---
+        
+        /**
+         * Executes a single transaction: deducts sender's balance (if applicable) and logs the transaction publicly.
+         * This avoids cross-user private document writes which caused the permission error.
+         */
+        async function executeTransaction(senderId, recipientId, amount, type) {
+            const BALANCE_DOC_PATH = `/artifacts/${appId}/users/`;
+            // Sender's budget is in their private path (only Label Owner will have a senderId set here)
+            const SENDER_BALANCE_REF = senderId ? doc(db, BALANCE_DOC_PATH, senderId, BALANCE_COLLECTION, BALANCE_DOC_ID) : null;
+            
+            try {
+                // 1. DEDUCT SENDER'S BALANCE (If sender exists) - MUST BE ATOMIC AND ONLY WRITING TO SENDER'S OWN PATH
+                if (senderId) {
+                    await runTransaction(db, async (transaction) => {
+                        const senderDoc = await transaction.get(SENDER_BALANCE_REF);
+                        const senderBalance = senderDoc.exists() ? senderDoc.data().amount : 0;
+
+                        if (senderBalance < amount) {
+                            throw new Error("Insufficient funds to complete transaction.");
+                        }
+                        // Writing to a private path where senderId == userId is permitted by security rules
+                        transaction.set(SENDER_BALANCE_REF, { amount: senderBalance - amount });
+                    });
+                }
+
+                // 2. LOG THE TRANSACTION PUBLICLY (The recipient's "deposit slip")
+                // Writing to a public collection is allowed, and the Performer will listen to this log.
+                const newDocRef = await addDoc(collection(db, TRANSACTION_LOG_COLLECTION), {
+                    senderId: senderId,
+                    recipientId: recipientId,
+                    amount: amount,
+                    type: type, // 'reward' or 'tip'
+                    timestamp: new Date().toISOString()
+                });
+                
+                console.log(`[TRANSACTION SUCCESS] Public transaction logged for Recipient: ${recipientId}. Doc ID: ${newDocRef.id}`); // DEBUG LOG
+                
+                return true;
+            } catch (error) {
+                console.error("Transaction failed:", error);
+                return false;
+            }
+        }
+        
+        /**
+         * Listens for balance changes. Label Owner listens to their private budget.
+         * Performer listens to the public transaction log and calculates total.
+         */
+        function listenForBalanceChanges() {
+            const BALANCE_DOC_PATH = `/artifacts/${appId}/users/${userId}/${BALANCE_COLLECTION}/${BALANCE_DOC_ID}`;
+            const BALANCE_REF = doc(db, BALANCE_DOC_PATH);
+
+            if (isLabelOwner) {
+                // Label Owner listens to their private budget doc
+                onSnapshot(BALANCE_REF, async (docSnapshot) => {
+                    // Fallback to INITIAL_LABEL_BUDGET if doc doesn't exist yet
+                    userBalance = docSnapshot.exists() ? docSnapshot.data().amount : INITIAL_LABEL_BUDGET;
+                    renderLocalUserInfo(); 
+                }, (error) => {
+                    console.error("Error listening to Label Owner balance:", error);
+                });
+            } else {
+                // Performer listens to the public transaction log filtered for them
+                const transactionsRef = collection(db, TRANSACTION_LOG_COLLECTION);
+                // Query for all transactions where this user is the recipient
+                const q = query(transactionsRef, where('recipientId', '==', userId));
+
+                onSnapshot(q, (snapshot) => {
+                    // Calculate the running balance from all transactions
+                    let runningBalance = CLIENT_STARTING_BALANCE;
+                    
+                    console.log(`[BALANCE] Performer (${userId}) listening. Found ${snapshot.docs.length} total transactions in log.`); // DEBUG LOG
+                    
+                    snapshot.docs.forEach(doc => {
+                        const data = doc.data();
+                        const amount = data?.amount || 0; 
+                        runningBalance += amount;
+                        console.log(`[BALANCE] Processing: Type=${data.type}, Amount=${amount}. Running Total: $${runningBalance.toFixed(2)}`); // DEBUG LOG
+                    });
+                    
+                    userBalance = runningBalance;
+                    renderLocalUserInfo();
+                }, (error) => {
+                     console.error("Error listening to Performer transactions:", error);
+                });
+            }
+        }
+
+        async function sendReward() {
+            const remoteUserId = remoteUserIdInput.value.trim();
+            const amount = 5;
+            if (!remoteUserId || remoteUserId === userId) {
+                logStatus("Enter a valid, different User ID to send a reward.", 'bg-red-200');
+                return;
+            }
+            if (userBalance < amount) {
+                logStatus(`Insufficient funds ($${userBalance.toFixed(2)} available) to send reward.`, 'bg-red-200');
+                return;
+            }
+            
+            sendRewardBtn.disabled = true;
+            sendRewardBtn.textContent = 'Processing...';
+
+            // Now uses the new executeTransaction function
+            const success = await executeTransaction(userId, remoteUserId, amount, 'reward');
+
+            setTimeout(() => {
+                sendRewardBtn.textContent = 'Send $5 Reward';
+                sendRewardBtn.disabled = remoteUserIdInput.value.trim().length === 0;
+            }, 2000);
+            
+            if (success) {
+                logStatus(`Successfully sent $${amount} reward to ${remoteUserId}`, 'bg-green-100');
+                animateTip(sendRewardBtn); // Trigger animation on success
+            } else {
+                logStatus('Failed to send reward due to transaction error. Check console for permissions details.', 'bg-red-200');
+            }
+        }
+        
+        async function sendGift() {
+            const remoteUserId = remoteUserIdInput.value.trim();
+            const amount = 5;
+
+            if (!remoteUserId || remoteUserId === userId) {
+                logStatus("Enter a valid, different User ID to send a tip.", 'bg-red-200');
+                return;
+            }
+            
+            sendGiftBtn.disabled = true;
+            sendGiftBtn.textContent = 'Tipping...';
+
+            // Client tips from an "infinite" source (senderId=null). Now uses the new executeTransaction function.
+            const success = await executeTransaction(null, remoteUserId, amount, 'tip'); 
+
+            setTimeout(() => {
+                sendGiftBtn.textContent = 'Send $5 Tip';
+                sendGiftBtn.disabled = remoteUserIdInput.value.trim().length === 0;
+            }, 2000);
+            
+            if (success) {
+                logStatus(`Successfully sent $${amount} tip to ${remoteUserId}`, 'bg-green-100');
+                animateTip(sendGiftBtn); // Trigger animation on success
+            } else {
+                 logStatus('Failed to send tip due to transaction error. Check console for permissions details.', 'bg-red-200');
+            }
+        }
+
+        // --- FILE UPLOAD (LOCAL ONLY) ---
+
+        /**
+         * Handles local file selection and displays a preview if it's an image.
+         */
+        window.handleFileUpload = function(role) {
+            const fileInput = document.getElementById(`${role}FileInput`);
+            const imagePreview = document.getElementById(`${role}ImagePreview`);
+            const file = fileInput.files[0];
+
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.classList.remove('preview-hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.classList.add('preview-hidden');
+                if (file) {
+                    console.log(`File selected for ${role}: ${file.name}`);
+                }
+            }
+        }
+
+        // --- WEBRTC SETUP & HANDLERS (Retained) ---
+
+        async function setupWebRTC() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+
+                localVideo.srcObject = localStream;
+                localVideo.classList.add('block');
+
+                pc = new RTCPeerConnection(configuration);
+
+                localStream.getTracks().forEach(track => {
+                    pc.addTrack(track, localStream);
+                });
+
+                remoteStream = new MediaStream();
+                remoteVideo.srcObject = remoteStream;
+                pc.ontrack = (event) => {
+                    event.streams[0].getTracks().forEach(track => {
+                        remoteStream.addTrack(track);
+                    });
+                };
+
+                pc.onconnectionstatechange = (event) => {
+                    if (pc.connectionState === 'connected') {
+                        logStatus('Call Connected!', 'bg-green-200', 'hangup');
+                    } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+                        logStatus('Connection Failed. Please try hanging up and calling again.', 'bg-red-200');
+                        hangUp(); 
+                    } else if (pc.connectionState === 'closed') {
+                         logStatus('Call Ended.', 'bg-gray-200');
+                    }
+                };
+
+                logStatus("Media Ready. Enter a Target ID to call, tip, or reward.", 'bg-yellow-100');
+                
+            } catch (error) {
+                console.error("Error setting up WebRTC/Media:", error);
+                logStatus(`Media Error: ${error.name}. Ensure camera/mic permissions are granted.`, 'bg-red-200');
+            }
+        }
+
+        function toFirestoreSdp(sdp) {
+            return { type: sdp.type, sdp: sdp.sdp };
+        }
+
+        async function startCall() {
+            const remoteUserId = remoteUserIdInput.value.trim();
+            if (!remoteUserId || remoteUserId === userId) {
+                logStatus("Please enter a valid, different User ID to call.", 'bg-red-200');
+                return;
+            }
+
+            logStatus(`Calling ${remoteUserId}...`, 'bg-yellow-200');
+            startCallBtn.disabled = true;
+
+            outgoingCallDocRef = doc(db, CALLS_COLLECTION, remoteUserId);
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+
+            await setDoc(outgoingCallDocRef, {
+                offer: toFirestoreSdp(pc.localDescription),
+                callerId: userId,
+            });
+
+            startListeningForAnswerAndCandidates(outgoingCallDocRef);
+        }
+
+        async function answerCall(callData) {
+            logStatus(`Answering call from ${callData.callerId}...`, 'bg-yellow-200', 'hangup');
+            answerCallBtn.disabled = true;
+            
+            outgoingCallDocRef = incomingCallDocRef; 
+
+            await pc.setRemoteDescription(new RTCSessionDescription(callData.offer));
+
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+
+            await updateDoc(incomingCallDocRef, {
+                answer: toFirestoreSdp(pc.localDescription),
+                answererId: userId,
+            });
+
+            startListeningForAnswerAndCandidates(incomingCallDocRef);
+        }
+
+        async function hangUp() {
+            logStatus('Hanging up...', 'bg-gray-200');
+            hangupBtn.disabled = true;
+            answerCallBtn.disabled = true;
+
+            if (pc) {
+                pc.close();
+                pc = null;
+            }
+
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localVideo.srcObject = null;
+            }
+            if (remoteVideo) {
+                remoteVideo.srcObject = null;
+            }
+
+            try {
+                if (outgoingCallDocRef) {
+                    const callerCandidates = await getDocs(getCandidatesPath(outgoingCallDocRef, 'caller'));
+                    callerCandidates.forEach(doc => deleteDoc(doc.ref));
+                    const answererCandidates = await getDocs(getCandidatesPath(outgoingCallDocRef, 'answerer'));
+                    answererCandidates.forEach(doc => deleteDoc(doc.ref));
+                    
+                    await deleteDoc(outgoingCallDocRef);
+                } else {
+                    await setDoc(incomingCallDocRef, {}); 
+                }
+            } catch (e) {
+                console.warn("Could not delete call document/candidates.", e);
+            }
+            
+            // Try to set user status to offline on explicit hang up
+            setOnlineStatus(false);
+            
+            outgoingCallDocRef = null;
+            await setupWebRTC();
+        }
+
+        // --- FIRESTORE LISTENERS (Retained) ---
+
+        function startListeningForCalls() {
+            onSnapshot(incomingCallDocRef, async (snapshot) => {
+                const data = snapshot.data();
+                if (!data) return; 
+
+                if (data.offer && data.callerId !== userId && !pc.remoteDescription) {
+                    logStatus(`Incoming Call from ${data.callerId}`, 'bg-green-100', 'answer');
+                    answerCallBtn.disabled = false;
+                    answerCallBtn.onclick = () => answerCall(data);
+                } else if (!data.offer && data.callerId !== userId && pc.remoteDescription) {
+                    logStatus('Remote user hung up. Disconnecting...', 'bg-red-200');
+                    hangUp();
+                }
+            });
+        }
+
+        function startListeningForAnswerAndCandidates(callDocRef) {
+            
+            const unsubscribeAnswer = onSnapshot(callDocRef, async (snapshot) => {
+                const data = snapshot.data();
+                
+                if (data?.answer && data.callerId === userId && !pc.remoteDescription) {
+                    const answerDescription = new RTCSessionDescription(data.answer);
+                    await pc.setRemoteDescription(answerDescription);
+
+                    logStatus(`Connected to ${data.answererId}!`, 'bg-green-200', 'hangup');
+                    unsubscribeAnswer();
+                }
+            });
+
+            const isCaller = outgoingCallDocRef && outgoingCallDocRef.id !== userId;
+            const remoteCandidatesRef = getCandidatesPath(callDocRef, isCaller ? 'answerer' : 'caller');
+
+            onSnapshot(remoteCandidatesRef, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const candidate = new RTCIceCandidate(change.doc.data());
+                        pc.addIceCandidate(candidate);
+                    }
+                });
+            });
+
+            pc.onicecandidate = async (event) => {
+                if (event.candidate) {
+                    const candidateType = isCaller ? 'caller' : 'answerer';
+                    await addDoc(getCandidatesPath(callDocRef, candidateType), event.candidate.toJSON());
+                }
+            };
+        }
+
+        // --- FIREBASE AUTHENTICATION & INITIALIZATION ---
+
+        async function initializeFirebase() {
+            if (!firebaseConfig) {
+                appInfoEl.innerHTML = `<div class="p-3 bg-red-200 rounded-lg shadow-inner text-red-800 font-medium">Error: Firebase Config not found.</div>`;
+                logStatus("Error: Firebase Config not found. Cannot start.", 'bg-red-200');
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        logStatus("Authenticated. Getting media...", 'bg-indigo-100');
+                        
+                        incomingCallDocRef = doc(db, CALLS_COLLECTION, userId); 
+
+                        const producerRef = doc(db, PRODUCER_ID_DOC_PATH);
+                        const producerDoc = await getDoc(producerRef);
+                        
+                        let producerOwnerId = null;
+
+                        if (!producerDoc.exists()) {
+                            await setDoc(producerRef, { producerId: userId, initial_setup_date: new Date().toISOString() });
+                            producerOwnerId = userId;
+                        } else {
+                            producerOwnerId = producerDoc.data().producerId;
+                        }
+
+                        isLabelOwner = (userId === producerOwnerId);
+                        
+                        // Set the current user's status to online (NEW)
+                        await setOnlineStatus(true); 
+
+                        // Set the current user's avatar initial based on role
+                        currentUserAvatarUrl = isLabelOwner ? 'P' : 'C';
+
+                        const BALANCE_REF = doc(db, `/artifacts/${appId}/users/${userId}/${BALANCE_COLLECTION}/${BALANCE_DOC_ID}`);
+                        const balanceDocSnap = await getDoc(BALANCE_REF);
+                        
+                        if (!balanceDocSnap.exists()) {
+                            const initialAmount = isLabelOwner ? INITIAL_LABEL_BUDGET : CLIENT_STARTING_BALANCE;
+                            await setDoc(BALANCE_REF, { amount: initialAmount });
+                        }
+                        
+                        // --- ROLE-SPECIFIC UI SETUP & INITIAL DATA LOAD ---
+                        setupRoleSpecificUI();
+                        await setupWebRTC();
+                        startListeningForCalls();
+                        listenForBalanceChanges(); 
+
+                    } else {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase Initialization Error:", error);
+                appInfoEl.innerHTML = `<div class="p-3 bg-red-200 rounded-lg shadow-inner text-red-800 font-medium">Authentication Error: Could not get User ID. See console for details.</div>`;
+                logStatus("Error initializing Firebase.", 'bg-red-200');
+            }
+        }
+        
+        function setupRoleSpecificUI() {
+            
+            // Start listening for the local user's profile immediately
+            listenForPerformerProfile(userId, true);
+            
+            if (isLabelOwner) {
+                // LABEL OWNER (HOST) VIEW: Read performer's data
+                targetBirthdayInput.disabled = true;
+                birthdayLabel.textContent = "Target Performer's Birthday (Read Only)";
+                saveBirthdayBtn.classList.add('hidden');
+                getAIFeedbackBtn.classList.remove('hidden');
+                
+                // When Label Owner types an ID, start listening for that ID's profile AND presence (UPDATED)
+                remoteUserIdInput.addEventListener('input', () => {
+                    const remoteId = remoteUserIdInput.value.trim();
+                    const hasText = remoteId.length > 0;
+                    startCallBtn.disabled = !hasText;
+                    sendGiftBtn.disabled = !hasText; 
+                    sendRewardBtn.disabled = !hasText; 
+                    
+                    if (hasText) {
+                        listenForPerformerProfile(remoteId, false); // Listen for remote user profile
+                        listenForRemotePresence(remoteId); // Listen for remote user's online status (NEW)
+                    } else {
+                        listenForPerformerProfile(null, false); // Clear the profile listener and fields
+                        listenForRemotePresence(null); // Clear presence listener (NEW)
+                    }
+                });
+                
+                aiResponseText.innerHTML = `<p class="text-gray-600 italic">As the **Label Owner**, enter the Target User ID to automatically load their sign for AI compatibility checks and see if they are <span class="font-bold">Online (Green Dot)</span>.</p>`;
+                
+            } else {
+                // TARGET PERFORMER (CLIENT) VIEW: Set their own data
+                targetBirthdayInput.disabled = false;
+                birthdayLabel.textContent = "YOUR Birthday (for AI Compatibility)";
+                saveBirthdayBtn.classList.remove('hidden');
+                getAIFeedbackBtn.classList.add('hidden'); 
+                
+                targetBirthdayInput.addEventListener('change', () => {
+                    const dateValue = targetBirthdayInput.value;
+                    const newZodiac = calculateZodiac(dateValue);
+                    
+                    targetZodiacDisplay.textContent = newZodiac ? getZodiacDisplay(newZodiac) : 'N/A';
+                    targetZodiacHidden.value = newZodiac;
+                    
+                    saveBirthdayBtn.disabled = !dateValue || newZodiac === 'N/A (Invalid Date)';
+                });
+                
+                aiResponseText.innerHTML = `<p class="text-gray-600 italic">As a **Performer**, please enter your birthday and click 'Save My Birthday' to enable the Label Owner's AI system to give you tailored feedback.</p>`;
+            }
+        }
+
+
+        // --- EVENT BINDINGS & STARTUP ---
+        
+        saveBirthdayBtn.onclick = saveMyBirthday;
+        startCallBtn.onclick = startCall;
+        hangupBtn.onclick = hangUp;
+        sendGiftBtn.onclick = sendGift; 
+        sendRewardBtn.onclick = sendReward;
+        getAIFeedbackBtn.onclick = callGeminiAI;
+
+        window.onload = initializeFirebase;
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: gifting-shop
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: MONGODB_URI
+        sync: false
+      - key: DB_NAME
+        value: rayd_ent
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: CREDITS_UNIT_USD
+        value: 0.10
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_PIN
+        sync: false
+      - key: SELLER_USERNAME
+        value: rayd_seller

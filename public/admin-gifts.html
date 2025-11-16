@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin — Gifts</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <div class="admin-wrap">
+      <h2>Admin — Gifts</h2>
+      <p>Create, edit or remove gifts and view recent transactions.</p>
+
+      <div id="status" class="admin-status"></div>
+
+      <h3>Create / Save Gift</h3>
+      <div>
+        <label>PIN: <input id="adminPin" type="password" placeholder="Enter admin PIN" /></label>
+        <label>Key: <input id="giftKey" /></label>
+        <label>Name: <input id="giftName" /></label>
+        <label>Price: <input id="giftPrice" type="number" /></label>
+        <label>Emoji: <input id="giftEmoji" /></label>
+        <button id="saveGift">Save Gift</button>
+        <div class="gift-upload-row">
+          <label>MP4 (optional): <input id="giftMedia" type="file" accept="video/mp4" /></label>
+          <button id="uploadGift">Upload + Save</button>
+        </div>
+      </div>
+
+      <h3>Existing Gifts</h3>
+      <div id="gifts" class="gift-list"></div>
+
+      <div class="transactions">
+  <h3>Balances</h3>
+  <div id="balances"></div>
+        <h3>Recent Transactions</h3>
+        <table id="txTable">
+          <thead><tr><th>When</th><th>Purchaser</th><th>Purchaser Name</th><th>Target</th><th>Target Name</th><th>Gift</th><th>Price</th><th>Room</th></tr></thead>
+          <tbody></tbody>
+        </table>
+          <h3 class="topups-heading">Recent Top-ups</h3>
+          <table id="topupsTable">
+            <thead><tr><th>When</th><th>UserId</th><th>Username</th><th>Credits</th><th>Amount</th><th>Currency</th><th>Session</th></tr></thead>
+            <tbody></tbody>
+          </table>
+      </div>
+    </div>
+
+    <script src="/admin-gifts.js"></script>
+  </body>
+</html>

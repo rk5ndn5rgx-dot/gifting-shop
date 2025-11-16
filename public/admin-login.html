@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .login-wrap {
+            max-width: 420px;
+            margin: 80px auto;
+            padding: 18px;
+            background: #0f0f0f;
+            border: 1px solid #222;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .forgot-password {
+            text-align: right;
+            margin-top: -5px;
+            margin-bottom: 15px;
+        }
+        .forgot-password a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrap">
+        <h2>Admin Login</h2>
+        <div id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Enter your password">
+            </div>
+            <div class="forgot-password">
+                <a href="#" id="forgotPasswordLink">Forgot Password?</a>
+            </div>
+            <button id="loginBtn">Login</button>
+            <div id="msg" class="message error-message"></div>
+        </div>
+        <div id="resetForm" class="reset-form">
+            <h3>Reset Password</h3>
+            <p>Enter your email address and we'll send you a password reset link.</p>
+            <div class="form-group">
+                <label for="resetEmail">Email</label>
+                <input type="email" id="resetEmail" required placeholder="Enter your email">
+            </div>
+            <button id="resetBtn">Send Reset Link</button>
+            <button id="backToLogin">Back to Login</button>
+            <div id="resetMsg" class="message"></div>
+        </div>
+    </div>
+    <script>
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const resetForm = document.getElementById('resetForm');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const backToLogin = document.getElementById('backToLogin');
+        const msg = document.getElementById('msg');
+        const resetMsg = document.getElementById('resetMsg');
+
+        // Show reset form
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.classList.add('hidden');
+            resetForm.classList.remove('hidden');
+        });
+
+        // Show login form
+        backToLogin.addEventListener('click', () => {
+            resetForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+            resetMsg.textContent = '';
+        });
+
+        // Handle login
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            msg.textContent = '';
+
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = '/admin.html';
+                } else {
+                    msg.textContent = data.error || 'Login failed';
+                    msg.classList.remove('text-success'); msg.classList.add('text-error');
+                }
+            } catch (err) {
+                msg.textContent = 'An error occurred';
+                msg.classList.remove('text-success'); msg.classList.add('text-error');
+            }
+        });
+
+        // Handle password reset request
+        document.getElementById('resetBtn').addEventListener('click', async () => {
+            const email = document.getElementById('resetEmail').value;
+            resetMsg.textContent = '';
+
+            try {
+                const response = await fetch('/api/admin/request-reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+                resetMsg.textContent = data.message;
+                resetMsg.classList.remove('text-error'); resetMsg.classList.toggle('text-success', response.ok);
+            } catch (err) {
+                resetMsg.textContent = 'An error occurred';
+                resetMsg.classList.remove('text-success'); resetMsg.classList.add('text-error');
+            }
+        });
+    </script>
+</body>
+</html>

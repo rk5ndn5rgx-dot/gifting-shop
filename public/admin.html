@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RAY D. ENT — Admin: Users</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+      .admin-wrap{max-width:980px;margin:18px auto;padding:12px;background:#0f0f0f;border:1px solid #222}
+      table{width:100%;border-collapse:collapse}
+      th,td{padding:8px;border-bottom:1px solid #222;color:#ddd}
+      th{background:#111;text-align:left}
+      .btn-small{padding:6px 8px;font-size:13px}
+    </style>
+  </head>
+  <body>
+    <div class="admin-wrap">
+      <h2>Admin — Users</h2>
+      <p>List of persistent users. Edit username and click Save.</p>
+  <div id="status" class="admin-status"></div>
+      <table id="usersTable">
+        <thead>
+          <tr><th>_id</th><th>Username</th><th>Created</th><th>LastSeen</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script src="/admin.js"></script>
+  </body>
+</html>

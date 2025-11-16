@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Admin Password</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-form">
+            <h2>Reset Password</h2>
+            <form id="resetForm">
+                <div class="form-group">
+                    <label for="password">New Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit">Reset Password</button>
+            </form>
+            <p id="message"></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('resetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const message = document.getElementById('message');
+
+            if (password !== confirmPassword) {
+                message.textContent = 'Passwords do not match';
+                message.classList.remove('text-success'); message.classList.add('text-error');
+                return;
+            }
+
+            // Get token from URL
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            
+            if (!token) {
+                message.textContent = 'Invalid reset link';
+                message.classList.remove('text-success'); message.classList.add('text-error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/reset-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    message.textContent = 'Password reset successfully. Redirecting to login...';
+                    message.classList.remove('text-error'); message.classList.add('text-success');
+                    setTimeout(() => {
+                        window.location.href = '/admin-login.html';
+                    }, 2000);
+                } else {
+                    message.textContent = data.error || 'Failed to reset password';
+                    message.classList.remove('text-success'); message.classList.add('text-error');
+                }
+            } catch (err) {
+                message.textContent = 'An error occurred';
+                message.classList.remove('text-success'); message.classList.add('text-error');
+            }
+        });
+    </script>
+</body>
+</html>

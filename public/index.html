@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<meta name="description" content="Send virtual gifts, video chat, and connect with friends in real-time. Get 100 free credits to start!" />
+		<meta name="theme-color" content="#667eea" />
+		<title>RAY D. ENT — Video Chatroom & Gift Shop</title>
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	<body>
+			<!-- Welcome Banner -->
+			<div id="welcomeBanner" class="welcome-banner">
+				<div class="welcome-content">
+					<h2>🎁 Welcome to RAY D. ENT Gift Shop!</h2>
+					<p>Connect with friends, send virtual gifts, and video chat in real-time</p>
+					<ul class="features-list">
+						<li>🎥 HD Video Chat</li>
+						<li>🎁 Send Virtual Gifts</li>
+						<li>💬 Real-time Messaging</li>
+						<li>🎉 100 Free Credits to Start!</li>
+					</ul>
+					<button id="getStartedBtn" class="get-started-btn">Get Started Free!</button>
+				</div>
+			</div>
+
+			<header>
+				<h1>RAY D. ENT — Chat & Studio</h1>
+				<div class="header-controls">
+					<label>Username: <input id="username" placeholder="Enter your name" class="small-input" /></label>
+					<label>Quality: 
+						<select id="videoQuality" class="small-input">
+							<option value="low">Low</option>
+							<option value="medium" selected>Med</option>
+							<option value="high">High</option>
+						</select>
+					</label>
+					<label>Room: <input id="roomId" value="main" class="small-input" /></label>
+					<span id="balanceBadge" class="balance-badge" title="Your credits">Balance: —</span>
+					<span id="userIdLabel" class="user-id-label" title="Persistent user id (for debugging)"></span>
+					<button id="joinBtn">Join Room</button>
+				</div>
+			</header>
+
+		<section id="videos">
+							<div>
+								<h3>Local <small id="localName" class="local-name"></small></h3>
+								<video id="localVideo" autoplay muted webkit-playsinline x5-playsinline></video>
+							</div>
+			<div>
+				<h3>Remotes</h3>
+				<div id="remoteVideos"></div>
+			</div>
+		</section>
+
+			<div id="chat">
+				<div id="messages"></div>
+				<div class="chat-input-row">
+					<input id="chatInput" placeholder="Type a message" />
+					<button id="sendBtn">Send</button>
+					<button id="giftsBtn">Gifts 🎁</button>
+					<button id="buyCreditsBtn" title="Buy more credits">Buy Credits</button>
+				</div>
+			</div>
+
+			<!-- Gift picker modal (hidden by default) -->
+			<div id="giftModal" class="gift-modal">
+				<div class="gift-panel">
+					<h3>Send a Gift</h3>
+					<div id="giftList"></div>
+					<div id="userList"></div>
+					<div class="gift-close-row"><button id="closeGift">Close</button></div>
+				</div>
+			</div>
+
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/script.js"></script>
+	</body>
+</html>
