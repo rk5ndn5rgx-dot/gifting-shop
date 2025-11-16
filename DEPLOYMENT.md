@@ -43,6 +43,7 @@ Set environment variables in Railway dashboard:
 2. Go to render.com
 3. New Web Service → Connect your repo
 4. Use `render.yaml` config (already included)
+5. Persistent uploads: `render.yaml` mounts a disk at `public/gifts_media` so uploaded MP4s persist across deploys/restarts.
 
 #### 3. **Fly.io**
 - ✅ Free tier (3 small VMs)
@@ -114,6 +115,52 @@ ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=secure-password
 ADMIN_PIN=123456
 SELLER_USERNAME=rayd_seller
+
+```
+
+---
+
+## 🗂️ Render Persistent Disk for Uploads
+
+Uploads (video gifts) must persist across deploys. This repo includes a Render disk mount in `render.yaml`:
+
+```yaml
+disk:
+   name: gifts-media
+   mountPath: /opt/render/project/src/public/gifts_media
+   sizeGB: 1
+```
+
+Notes:
+- Render will create the disk on first deploy. You can resize in the Render dashboard.
+- Files uploaded via the admin UI will be stored under `public/gifts_media` and will persist across restarts.
+- Keep `public/gifts_media/**` out of Git (already ignored) to avoid bloating your repository.
+
+---
+
+## 🔔 Stripe Webhook Setup (Production)
+
+After your first successful deploy, configure a Stripe webhook for your Render URL:
+
+1. Copy your Render URL (e.g., `https://gifting-shop.onrender.com`).
+2. In Stripe Dashboard → Developers → Webhooks → Add endpoint:
+    - Endpoint URL: `https://<your-render-url>/webhook/stripe`
+    - Events to send: `checkout.session.completed`
+3. Copy the Signing Secret (`whsec_...`) and set it in Render env as `STRIPE_WEBHOOK_SECRET`.
+4. Rotate old keys if any were exposed and remove them from your account.
+
+Local testing:
+
+```bash
+stripe listen --events checkout.session.completed \
+   --forward-to http://localhost:3000/webhook/stripe --print-secret
+```
+Use the printed `whsec_...` in your local shell:
+
+```powershell
+$env:STRIPE_WEBHOOK_SECRET = 'whsec_...'
+$env:STRIPE_SECRET_KEY    = 'sk_test_...'
+node server.js
 ```
 
 ---

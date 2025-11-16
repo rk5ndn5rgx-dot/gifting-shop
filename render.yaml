@@ -5,6 +5,10 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
+    disk:
+      name: gifts-media
+      mountPath: /opt/render/project/src/public/gifts_media
+      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: 18.17.0
