@@ -34,3 +34,5 @@ services:
         sync: false
       - key: SELLER_USERNAME
         value: rayd_seller
+      - key: CLOUDINARY_URL
+        sync: false

@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer');
 const Stripe = require('stripe');
 const multer = require('multer');
 const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
 
 const app = express();
 const server = http.createServer(app);
@@ -40,6 +41,11 @@ const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 const CREDITS_UNIT_USD = Number(process.env.CREDITS_UNIT_USD || '0.10'); // $ per 1 credit
 const stripe = STRIPE_SECRET_KEY ? Stripe(STRIPE_SECRET_KEY) : null;
+
+// Cloudinary configuration (CLOUDINARY_URL env var auto-configures)
+if (process.env.CLOUDINARY_URL) {
+	cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL });
+}
 
 // Default gifts (used when DB unavailable or to seed DB)
 const DEFAULT_GIFTS = [
@@ -574,17 +580,8 @@ app.get('/api/gifts', async (req, res) => {
 	}
 });
 
-// Ensure gifts media directory exists and configure multer for uploads
-const GIFTS_MEDIA_DIR = path.join(PUBLIC_DIR, 'gifts_media');
-try { if (!fs.existsSync(GIFTS_MEDIA_DIR)) fs.mkdirSync(GIFTS_MEDIA_DIR, { recursive: true }); } catch (e) { console.warn('Could not create gifts_media dir', e); }
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) { cb(null, GIFTS_MEDIA_DIR); },
-	filename: function (req, file, cb) {
-		const safe = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-		cb(null, Date.now() + '-' + safe);
-	}
-});
-const upload = multer({ storage: storage, limits: { fileSize: 30 * 1024 * 1024 } });
+// Configure multer for in-memory uploads (Cloudinary receives buffer)
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 30 * 1024 * 1024 } });
 
 // Admin upload endpoint: upload an MP4 (field name 'media') and create/update a gift
 app.post('/api/admin/upload-gift', upload.single('media'), async (req, res) => {
@@ -595,7 +592,21 @@ app.post('/api/admin/upload-gift', upload.single('media'), async (req, res) => {
 		const { key, name, price, emoji } = req.body || {};
 		if (!key || !name) return res.status(400).json({ error: 'key and name required' });
 		if (!req.file) return res.status(400).json({ error: 'media file required' });
-		const mediaUrl = `/gifts_media/${req.file.filename}`;
+		
+		// Upload to Cloudinary if configured; fallback to error if not
+		if (!process.env.CLOUDINARY_URL) {
+			return res.status(503).json({ error: 'CLOUDINARY_URL not configured' });
+		}
+		
+		const uploadResult = await new Promise((resolve, reject) => {
+			const uploadStream = cloudinary.uploader.upload_stream(
+				{ resource_type: 'video', folder: 'gifts', public_id: `${Date.now()}-${key}` },
+				(error, result) => (error ? reject(error) : resolve(result))
+			);
+			uploadStream.end(req.file.buffer);
+		});
+		
+		const mediaUrl = uploadResult.secure_url;
 		if (!db) return res.status(503).json({ error: 'Database not available' });
 		const p = typeof price === 'string' ? Number(price) : price;
 		await db.collection('gifts').updateOne({ key }, { $set: { key, name, price: p || 0, emoji: emoji || '', mediaUrl, updatedAt: new Date() }, $setOnInsert: { createdAt: new Date() } }, { upsert: true });
