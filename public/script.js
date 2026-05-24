@@ -224,6 +224,9 @@ socket.on('user-left', (info) => {
 
 // maintain a map of users in the current room: socketId -> {socketId, username, userId}
 const roomUsers = {};
+// expose roomUsers to overlay modules
+window.BabyRayStudio = window.BabyRayStudio || {};
+window.BabyRayStudio.roomUsers = roomUsers;
 
 // Gift UI elements
 const giftsBtn = document.getElementById('giftsBtn');
@@ -244,6 +247,13 @@ closeGiftBtn && closeGiftBtn.addEventListener('click', () => {
 });
 
 function openGiftModal() {
+	if (window.BabyRayStudio && window.BabyRayStudio.gift && typeof window.BabyRayStudio.gift.show === 'function') {
+		window.BabyRayStudio.gift.show();
+		// ensure we populate lists
+		if (typeof window.loadGifts === 'function') window.loadGifts();
+		if (typeof window.renderUserList === 'function') window.renderUserList();
+		return;
+	}
 	if (!giftModal) return;
 	giftModal.classList.add('open');
 	// block main UI while modal is open
@@ -253,6 +263,10 @@ function openGiftModal() {
 }
 
 function closeGiftModal() {
+	if (window.BabyRayStudio && window.BabyRayStudio.gift && typeof window.BabyRayStudio.gift.hide === 'function') {
+		window.BabyRayStudio.gift.hide();
+		return;
+	}
 	if (!giftModal) return;
 	giftModal.classList.remove('open');
 	// restore main UI controls

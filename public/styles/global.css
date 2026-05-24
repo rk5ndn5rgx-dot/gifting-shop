@@ -72,3 +72,9 @@ button, input, select, textarea {
   .studio-right{order:2}
 }
 
+/* Gift modal bottom-right slide-up styles (non-destructive to existing full-screen modal) */
+.gift-modal.bottom-right{display:flex;align-items:flex-end;justify-content:flex-end;padding:18px;pointer-events:auto}
+.gift-modal.bottom-right .gift-panel{max-width:420px;width:92%;border-radius:10px;transform:translateY(18px);transition:transform .28s cubic-bezier(.2,.9,.2,1),opacity .28s;opacity:0}
+.gift-modal.bottom-right.open .gift-panel.slide-up{transform:translateY(0);opacity:1}
+.gift-panel{background:var(--panel);border:1px solid rgba(255,255,255,0.04);padding:12px;border-radius:8px;color:var(--text)}
+

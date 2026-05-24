@@ -34,13 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Regions: right side opens chat; bottom-right opens gifts; top opens council; left opens enterprise; top-left ghost; bottom center scene switch
       if (nx > 0.78 && ny > 0.62) {
-        // bottom-right -> gift shop
-        if (giftsBtn) giftsBtn.click();
+        // bottom-right -> gift shop via API if present
+        try {
+          if (window.BabyRayStudio && window.BabyRayStudio.gift && typeof window.BabyRayStudio.gift.show === 'function') {
+            window.BabyRayStudio.gift.show();
+          } else if (giftsBtn) {
+            giftsBtn.click();
+          }
+        } catch (e) { console.warn('Gift show failed', e); }
         return;
       }
       if (nx > 0.78) {
-        // right side -> toggle chat
-        if (chatPanel) chatPanel.classList.toggle('hidden');
+        // right side -> toggle chat via API if available
+        try {
+          if (window.BabyRayStudio && window.BabyRayStudio.chat && typeof window.BabyRayStudio.chat.toggle === 'function') {
+            window.BabyRayStudio.chat.toggle();
+          } else if (chatPanel) {
+            chatPanel.classList.toggle('hidden');
+          }
+        } catch (e) { console.warn('Chat toggle failed', e); }
         return;
       }
       if (ny < 0.18) {
@@ -67,6 +79,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Expose a small API for debugging from the console
-window.BabyRayStudio = {
-  switchCameraMode,
-};
+window.BabyRayStudio = window.BabyRayStudio || {};
+window.BabyRayStudio.switchCameraMode = switchCameraMode;
