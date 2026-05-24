@@ -7,6 +7,7 @@
 		<meta name="theme-color" content="#667eea" />
 		<title>RAY D. ENT — Video Chatroom & Gift Shop</title>
 		<link rel="stylesheet" href="/style.css">
+		<link rel="stylesheet" href="/styles/global.css">
 	</head>
 	<body>
 			<!-- Welcome Banner -->
@@ -42,16 +43,33 @@
 				</div>
 			</header>
 
-		<section id="videos">
-							<div>
-								<h3>Local <small id="localName" class="local-name"></small></h3>
-								<video id="localVideo" autoplay muted webkit-playsinline x5-playsinline></video>
-							</div>
-			<div>
-				<h3>Remotes</h3>
-				<div id="remoteVideos"></div>
-			</div>
-		</section>
+		<!-- Studio stage: centered full-screen camera with interactive border triggers -->
+		<main class="studio-root">
+			<section class="studio-left">
+				<!-- left column could host quick controls or enterprise panel -->
+			</section>
+			<section class="studio-center">
+				<div class="camera-border" id="cameraBorder">
+					<div class="camera-stage">
+						<video id="localVideo" autoplay muted playsinline></video>
+						<!-- remote videos will be appended to #remoteVideos container -->
+						<div id="remoteVideos" aria-hidden="false"></div>
+					</div>
+				</div>
+			</section>
+			<section class="studio-right">
+				<!-- overlays live here (chat, gifting, alerts) -->
+				<div id="chat" class="overlay chat-panel">
+					<div id="messages"></div>
+					<div class="chat-input-row">
+						<input id="chatInput" placeholder="Type a message" />
+						<button id="sendBtn">Send</button>
+						<button id="giftsBtn">Gifts 🎁</button>
+						<button id="buyCreditsBtn" title="Buy more credits">Buy Credits</button>
+					</div>
+				</div>
+			</section>
+		</main>
 
 			<div id="chat">
 				<div id="messages"></div>
@@ -74,6 +92,7 @@
 			</div>
 
 		<script src="/socket.io/socket.io.js"></script>
+		<script type="module" src="/src/main.js"></script>
 		<script src="/script.js"></script>
 	</body>
 </html>
