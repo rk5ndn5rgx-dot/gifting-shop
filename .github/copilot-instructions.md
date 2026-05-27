@@ -43,3 +43,22 @@ Purpose: make AI agents productive in this real‑time gifting + WebRTC chat app
 Key files to study: `server.js`, `public/script.js`, `public/admin-gifts.js`, `public/admin.js`.
 
 Feedback: If you add new conventions (routes/events/indexes), tell me so I can update this file.
+
+## Branding note
+YARBOUGH B.S. — Before Slavery — The Foundation
+         ↓
+Automation Intelligence — The Modern Tool
+         ↓
+Baby Ray Studio × VABBEY KING — The Creative Output
+         ↓
+LinkedIn × Lincoln — The Professional Network
+         ↓
+YARBOUGH KING — The Crown — Est. 1466
+
+## Field detail
+**Authored By** Antonio Roschelle Yarbough
+**Organization** I.D.O. — Independent Digital Rights Org
+**Issued Under** YARBOUGH B.S. LLC
+**Heritage** Est. 1466 — YARBOUGH KING
+**Date Issued** May 26, 2026
+**Location** Philadelphia, Pennsylvania
