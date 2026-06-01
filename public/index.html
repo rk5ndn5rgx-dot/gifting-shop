@@ -8,6 +8,25 @@
 		<title>RAY D. ENT — Video Chatroom & Gift Shop</title>
 		<link rel="stylesheet" href="/style.css">
 		<link rel="stylesheet" href="/styles/global.css">
+		<!-- Firebase SDK -->
+		<script type="module">
+			import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+			import { getDatabase } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+			
+			const firebaseConfig = {
+			  apiKey: "AIzaSyB0Y2l5fHvzoUkSJFWrd4ADb-6rRAT47Sw",
+			  authDomain: "studio-2fb13.firebaseapp.com",
+			  projectId: "studio-2fb13",
+			  databaseURL: "https://studio-2fb13-default-rtdb.firebaseio.com",
+			  storageBucket: "studio-2fb13.firebasestorage.app",
+			  messagingSenderId: "367389228492",
+			  appId: "1:367389228492:web:bc6f2aa62446f7dd957169",
+			  measurementId: "G-GQVYKH4J36"
+			};
+			
+			window.firebaseApp = initializeApp(firebaseConfig);
+			window.firebaseDb = getDatabase(window.firebaseApp);
+		</script>
 	</head>
 	<body>
 			<!-- Welcome Banner -->
@@ -93,6 +112,6 @@
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script type="module" src="/src/main.js"></script>
-		<script src="/script.js"></script>
+		<script type="module" src="/script-firebase.js"></script>
 	</body>
 </html>
