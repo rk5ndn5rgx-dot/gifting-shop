@@ -1,8 +1,6 @@
 // Client-side WebRTC + Socket.io signaling with usernames
-// Connect to backend (Vercel or local for dev)
-const BACKEND_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://ai-antonios-inteligence.vercel.app' 
-  : 'http://localhost:3000';
+// Connect to backend (public IP or local for dev)
+const BACKEND_URL = 'http://146.70.230.100:3000';
 const socket = io(BACKEND_URL, { reconnection: true, reconnectionDelay: 1000, reconnectionDelayMax: 5000 });
 
 const localVideo = document.getElementById('localVideo');
