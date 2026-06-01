@@ -13,7 +13,15 @@ const cloudinary = require('cloudinary').v2;
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+	cors: {
+		origin: ['https://raydent-16571.web.app', 'https://studio-9757662699-74931.web.app', 'https://studio-2fb13.web.app', 'http://localhost:3000'],
+		methods: ['GET', 'POST'],
+		credentials: true
+	},
+	transports: ['websocket', 'polling'],
+	allowUpgrades: true
+});
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
 // Use conditional JSON parser: skip for Stripe webhook raw body

@@ -38,9 +38,10 @@ async function startLocalStream() {
 }
 
 function getConstraintsForQuality(q) {
-	if (q === 'low') return { video: { width: { ideal: 320 }, height: { ideal: 240 }, frameRate: { ideal: 15 } }, audio: true };
-	if (q === 'high') return { video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } }, audio: true };
-	return { video: { width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 24 } }, audio: true };
+	// More permissive constraints - let the browser choose best available
+	if (q === 'low') return { video: { frameRate: { ideal: 15 } }, audio: true };
+	if (q === 'high') return { video: { frameRate: { ideal: 30 } }, audio: true };
+	return { video: { frameRate: { ideal: 24 } }, audio: true };
 }
 
 // Quality change handler
