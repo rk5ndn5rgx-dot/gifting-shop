@@ -1,8 +1,9 @@
 services:
   - type: web
-    name: gifting-shop
+    name: gifting-shop-backend
     env: node
     plan: free
+    private: true
     buildCommand: npm install
     startCommand: npm start
     envVars:
@@ -36,3 +37,21 @@ services:
         value: rayd_seller
       - key: CLOUDINARY_URL
         sync: false
+      - key: PORT
+        value: 10000
+
+  - type: web
+    name: gifting-shop-webhook-proxy
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node stripe-proxy.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: PRIVATE_SERVICE_HOST
+        value: gifting-shop-backend.internal
+      - key: PRIVATE_SERVICE_PORT
+        value: 10000
+      - key: PRIVATE_SERVICE_PROTOCOL
+        value: http
