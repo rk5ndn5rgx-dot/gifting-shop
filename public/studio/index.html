@@ -3,24 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio 4.0 - RAY D. ENT</title>
+    <title>Studio 4.0 - RAY D. ENT Gift Studio</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/styles/global.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="studio-container">
         <header>
             <h1>Studio 4.0</h1>
-            <p>Create, Collaborate, Create</p>
-        </header>
-        <main>
-            <div id="studio-content">
-                <p>Loading studio...</p>
+            <p>Live Gift Studio Experience</p>
+            <div class="studio-controls">
+                <label>Username: <input id="username" placeholder="Enter your name" class="small-input" /></label>
+                <label>Room: <input id="roomId" value="main" class="small-input" /></label>
+                <label>Quality:
+                    <select id="videoQuality" class="small-input">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Med</option>
+                        <option value="high">High</option>
+                    </select>
+                </label>
+                <span id="balanceBadge" class="balance-badge">Balance: —</span>
+                <span id="userIdLabel" class="user-id-label"></span>
+                <button id="joinBtn">Join Room</button>
             </div>
+        </header>
+        <main class="studio-root">
+            <section class="studio-left">
+                <div class="studio-panel">
+                    <h2>Studio Controls</h2>
+                    <p>Tap the camera border to open chat, gifts, and special overlays.</p>
+                </div>
+            </section>
+            <section class="studio-center">
+                <div id="cameraBorder" class="camera-border">
+                    <div class="camera-stage">
+                        <video id="localVideo" autoplay muted playsinline></video>
+                        <div id="remoteVideos"></div>
+                    </div>
+                </div>
+            </section>
+            <section class="studio-right">
+                <div class="studio-panel">
+                    <button id="giftsBtn" class="studio-action-btn">Gifts 🎁</button>
+                    <button id="buyCreditsBtn" class="studio-action-btn">Buy Credits</button>
+                    <div id="localName" class="studio-label"></div>
+                </div>
+            </section>
         </main>
         <footer>
             <p>&copy; 2026 RAY D. ENT. All rights reserved.</p>
         </footer>
     </div>
-    <script type="module" src="main.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/script.js" defer></script>
+    <script type="module" src="../src/main.js"></script>
 </body>
 </html>

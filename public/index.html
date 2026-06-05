@@ -58,60 +58,52 @@
 					<label>Room: <input id="roomId" value="main" class="small-input" /></label>
 					<span id="balanceBadge" class="balance-badge" title="Your credits">Balance: —</span>
 					<span id="userIdLabel" class="user-id-label" title="Persistent user id (for debugging)"></span>
+					<span id="localName" class="hidden"></span>
 					<button id="joinBtn">Join Room</button>
+					<button id="openStudioBtn" class="small-input" onclick="location.href='/studio'">Studio</button>
+					<button id="openStageBtn" class="small-input" onclick="location.href='/stage'">Stage</button>
 				</div>
 			</header>
 
-		<!-- Studio stage: centered full-screen camera with interactive border triggers -->
-		<main class="studio-root">
-			<section class="studio-left">
-				<!-- left column could host quick controls or enterprise panel -->
-			</section>
-			<section class="studio-center">
-				<div class="camera-border" id="cameraBorder">
-					<div class="camera-stage">
-						<video id="localVideo" autoplay muted playsinline></video>
-						<!-- remote videos will be appended to #remoteVideos container -->
-						<div id="remoteVideos" aria-hidden="false"></div>
+			<main class="studio-root">
+				<section class="studio-left">
+					<!-- left column could host quick controls or enterprise panel -->
+				</section>
+				<section class="studio-center">
+					<div class="camera-border" id="cameraBorder">
+						<div class="camera-stage">
+							<video id="localVideo" autoplay muted playsinline></video>
+							<!-- remote videos will be appended to #remoteVideos container -->
+							<div id="remoteVideos" aria-hidden="false"></div>
+						</div>
 					</div>
-				</div>
-			</section>
-			<section class="studio-right">
-				<!-- overlays live here (chat, gifting, alerts) -->
-				<div id="chat" class="overlay chat-panel">
-					<div id="messages"></div>
-					<div class="chat-input-row">
-						<input id="chatInput" placeholder="Type a message" />
-						<button id="sendBtn">Send</button>
-						<button id="giftsBtn">Gifts 🎁</button>
-						<button id="buyCreditsBtn" title="Buy more credits">Buy Credits</button>
+				</section>
+				<section class="studio-right">
+					<!-- overlays live here (chat, gifting, alerts) -->
+					<div id="chat" class="overlay chat-panel">
+						<div id="messages"></div>
+						<div class="chat-input-row">
+							<input id="chatInput" placeholder="Type a message" />
+							<button id="sendBtn">Send</button>
+							<button id="giftsBtn">Gifts 🎁</button>
+							<button id="buyCreditsBtn" title="Buy more credits">Buy Credits</button>
+						</div>
 					</div>
-				</div>
-			</section>
-		</main>
+				</section>
+			</main>
 
-			<div id="chat">
-				<div id="messages"></div>
-				<div class="chat-input-row">
-					<input id="chatInput" placeholder="Type a message" />
-					<button id="sendBtn">Send</button>
-					<button id="giftsBtn">Gifts 🎁</button>
-					<button id="buyCreditsBtn" title="Buy more credits">Buy Credits</button>
-				</div>
+		<!-- Gift picker modal (hidden by default) -->
+		<div id="giftModal" class="gift-modal">
+			<div class="gift-panel">
+				<h3>Send a Gift</h3>
+				<div id="giftList"></div>
+				<div id="userList"></div>
+				<div class="gift-close-row"><button id="closeGift">Close</button></div>
 			</div>
-
-			<!-- Gift picker modal (hidden by default) -->
-			<div id="giftModal" class="gift-modal">
-				<div class="gift-panel">
-					<h3>Send a Gift</h3>
-					<div id="giftList"></div>
-					<div id="userList"></div>
-					<div class="gift-close-row"><button id="closeGift">Close</button></div>
-				</div>
-			</div>
+		</div>
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script type="module" src="/src/main.js"></script>
-		<script type="module" src="/script-firebase.js"></script>
+		<script src="/script.js" defer></script>
 	</body>
 </html>

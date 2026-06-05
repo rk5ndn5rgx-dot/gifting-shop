@@ -20,6 +20,10 @@
         "destination": "/giftshelf/index.html"
       },
       {
+        "source": "/api/**",
+        "function": "api"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
@@ -39,6 +43,9 @@
   "emulators": {
     "hosting": {
       "port": 5000
+    },
+    "functions": {
+      "port": 5001
     },
     "firestore": {
       "port": 8080
