@@ -1,11 +1,11 @@
 services:
-  - type: web
+  - type: private
     name: gifting-shop-backend
-    env: node
+    env: production
+    region: oregon
     plan: free
-    private: true
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node server.js
     envVars:
       - key: NODE_VERSION
         value: 18.17.0
@@ -37,8 +37,13 @@ services:
         value: rayd_seller
       - key: CLOUDINARY_URL
         sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_KEY
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        value: studio-2fb13
       - key: PORT
         value: 10000
+      # add other secrets here
 
   - type: web
     name: gifting-shop-webhook-proxy

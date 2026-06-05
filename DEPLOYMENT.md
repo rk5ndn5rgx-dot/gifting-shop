@@ -205,6 +205,21 @@ Security tips:
 - Set a strong `ADMIN_PIN` and `ADMIN_PASSWORD`.
 - Limit allowed Socket origins with `SOCKET_IO_CORS`.
 
+## Firebase Admin setup and test
+
+If you add `FIREBASE_SERVICE_ACCOUNT_KEY` and `FIREBASE_PROJECT_ID` to the private backend, the app will initialize Firebase Admin automatically.
+
+To verify the connection from Render, call the admin-only health endpoint after logging in as an admin:
+
+`GET /api/admin/firebase-health`
+
+It returns:
+- `projectId`
+- `usersReturned`
+- `userUids`
+
+This proves that the private backend can authenticate to Firebase and call Firebase Admin APIs.
+
 See the `server.js` Socket.IO CORS config (reads `SOCKET_IO_CORS`) for details: [server.js](server.js#L1-L40).
 
 Copy of environment template: see [`.env.example`](.env.example#L1-L200) to populate secrets before adding them to Render.

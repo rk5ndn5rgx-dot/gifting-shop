@@ -14,9 +14,10 @@
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.5.1",
     "express": "^5.1.0",
+    "firebase-admin": "^13.10.0",
     "mongodb": "^7.0.0",
     "multer": "^2.0.2",
-    "nodemailer": "^7.0.10",
+    "nodemailer": "^8.0.10",
     "socket.io": "^4.8.1",
     "stripe": "^14.25.0"
   }

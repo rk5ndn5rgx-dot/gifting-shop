@@ -10,6 +10,7 @@ const Stripe = require('stripe');
 const multer = require('multer');
 const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
+const admin = require('firebase-admin');
 
 const app = express();
 const server = http.createServer(app);
@@ -51,6 +52,25 @@ const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 const CREDITS_UNIT_USD = Number(process.env.CREDITS_UNIT_USD || '0.10'); // $ per 1 credit
 const stripe = STRIPE_SECRET_KEY ? Stripe(STRIPE_SECRET_KEY) : null;
+
+// Firebase Admin configuration
+const FIREBASE_SERVICE_ACCOUNT_KEY = process.env.FIREBASE_SERVICE_ACCOUNT_KEY || '';
+const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || '';
+let firebaseInitialized = false;
+
+if (FIREBASE_SERVICE_ACCOUNT_KEY && FIREBASE_PROJECT_ID) {
+    try {
+        const serviceAccount = JSON.parse(FIREBASE_SERVICE_ACCOUNT_KEY);
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+            databaseURL: `https://${FIREBASE_PROJECT_ID}.firebaseio.com`
+        });
+        firebaseInitialized = true;
+        console.log('Firebase Admin initialized for project', FIREBASE_PROJECT_ID);
+    } catch (err) {
+        console.error('Failed to initialize Firebase Admin:', err.message);
+    }
+}
 
 // Cloudinary configuration (CLOUDINARY_URL env var auto-configures)
 if (process.env.CLOUDINARY_URL) {
@@ -297,6 +317,22 @@ app.post('/api/admin/reset-password', async (req, res) => {
 	} catch (err) {
 		console.error('reset-password error', err);
 		res.status(500).json({ error: 'Internal server error' });
+	}
+});
+
+app.get('/api/admin/firebase-health', async (req, res) => {
+	if (!await isAdminReq(req)) return res.status(401).json({ error: 'Unauthorized' });
+	if (!firebaseInitialized) return res.status(503).json({ error: 'Firebase Admin is not configured' });
+	try {
+		const list = await admin.auth().listUsers(10);
+		res.json({
+			projectId: FIREBASE_PROJECT_ID,
+			usersReturned: list.users.length,
+			userUids: list.users.map(user => user.uid)
+		});
+	} catch (err) {
+		console.error('Firebase health check failed', err);
+		res.status(500).json({ error: 'Firebase health check failed', detail: err.message });
 	}
 });
 
