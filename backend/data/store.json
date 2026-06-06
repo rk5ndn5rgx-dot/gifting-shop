@@ -1,0 +1,34 @@
+{
+  "users": [],
+  "gifts": [
+    {
+      "id": "sparkle",
+      "name": "Sparkle",
+      "price": 25,
+      "image": null,
+      "description": "Send a joyful sparkle animation.",
+      "animation": null,
+      "createdAt": "2026-06-05T23:18:19.170Z"
+    },
+    {
+      "id": "heart",
+      "name": "Heart",
+      "price": 50,
+      "image": null,
+      "description": "Share a heart to show love.",
+      "animation": null,
+      "createdAt": "2026-06-05T23:18:19.186Z"
+    },
+    {
+      "id": "star",
+      "name": "Star",
+      "price": 100,
+      "image": null,
+      "description": "A premium star gift for the stage.",
+      "animation": null,
+      "createdAt": "2026-06-05T23:18:19.186Z"
+    }
+  ],
+  "transactions": [],
+  "roomUsers": []
+}
